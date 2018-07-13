@@ -11,7 +11,7 @@ type Tables []Table
 type TableIndex struct {
 	Name string `json:"name"`
 
-	Key   string `json:"key"`
+	Hash  string `json:"hash"`
 	Range string `json:"range"`
 }
 
