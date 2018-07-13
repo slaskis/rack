@@ -413,6 +413,52 @@ func (v ServiceScaleCount) MarshalYAML() (interface{}, error) {
 	return v, nil
 }
 
+func (v Tables) MarshalYAML() (interface{}, error) {
+	return marshalMapSlice(v)
+}
+
+func (v *Tables) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	return unmarshalMapSlice(unmarshal, v)
+}
+
+func (v TableIndexes) MarshalYAML() (interface{}, error) {
+	return marshalMapSlice(v)
+}
+
+func (v *TableIndexes) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	return unmarshalMapSlice(unmarshal, v)
+}
+
+func (v *TableIndex) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var w interface{}
+
+	if err := unmarshal(&w); err != nil {
+		return err
+	}
+
+	switch t := w.(type) {
+	case string:
+		if t != "" {
+			parts := strings.Split(t, ",")
+			v.Hash = strings.TrimSpace(parts[0])
+			if len(parts) > 0 {
+				v.Range = strings.TrimSpace(parts[1])
+			}
+		}
+	case map[interface{}]interface{}:
+		if s, ok := t["hash"].(string); ok {
+			v.Hash = s
+		}
+		if s, ok := t["range"].(string); ok {
+			v.Range = s
+		}
+	default:
+		return fmt.Errorf("invalid index: %v", w)
+	}
+
+	return nil
+}
+
 func (v Timers) MarshalYAML() (interface{}, error) {
 	return marshalMapSlice(v)
 }

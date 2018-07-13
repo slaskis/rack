@@ -854,6 +854,18 @@ func (c *Client) SystemUpdate(opts structs.SystemUpdateOptions) error {
 	return err
 }
 
+func (c *Client) TableGet(app string, name string) (*structs.Table, error) {
+	var err error
+
+	ro := stdsdk.RequestOptions{Headers: stdsdk.Headers{}, Params: stdsdk.Params{}}
+
+	var v *structs.Table
+
+	err = c.Get(fmt.Sprintf("/apps/%s/tables/%s", app, name), ro, &v)
+
+	return v, err
+}
+
 func (c *Client) Workers() error {
 	err := fmt.Errorf("not available via api")
 	return err

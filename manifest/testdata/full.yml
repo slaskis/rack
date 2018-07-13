@@ -64,3 +64,11 @@ services:
   inherit:
     "<<": *proxy
     command: inherit
+tables:
+  foo:
+  bar:
+    indexes:
+      alpha: one, two
+      bravo:
+        hash: three
+        range: four

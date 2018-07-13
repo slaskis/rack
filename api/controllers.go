@@ -1415,6 +1415,29 @@ func (s *Server) SystemUpdate(c *stdapi.Context) error {
 	return c.RenderOK()
 }
 
+func (s *Server) TableGet(c *stdapi.Context) error {
+	if err := s.hook("TableGetValidate", c); err != nil {
+		return err
+	}
+
+	app := c.Var("app")
+	name := c.Var("name")
+
+	v, err := s.provider(c).TableGet(app, name)
+	if err != nil {
+		if ae, ok := s.provider(c).(ApiErrorer); ok {
+			return ae.ApiError(err)
+		}
+		return err
+	}
+
+	if vs, ok := interface{}(v).(Sortable); ok {
+		sort.Slice(v, vs.Less)
+	}
+
+	return c.RenderJSON(v)
+}
+
 func (s *Server) Workers(c *stdapi.Context) error {
 	return stdapi.Errorf(404, "not available via api")
 }

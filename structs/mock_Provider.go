@@ -1282,6 +1282,29 @@ func (_m *MockProvider) SystemUpdate(opts SystemUpdateOptions) error {
 	return r0
 }
 
+// TableGet provides a mock function with given fields: app, name
+func (_m *MockProvider) TableGet(app string, name string) (*Table, error) {
+	ret := _m.Called(app, name)
+
+	var r0 *Table
+	if rf, ok := ret.Get(0).(func(string, string) *Table); ok {
+		r0 = rf(app, name)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Table)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(app, name)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Workers provides a mock function with given fields:
 func (_m *MockProvider) Workers() error {
 	ret := _m.Called()

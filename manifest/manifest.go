@@ -15,6 +15,7 @@ type Manifest struct {
 	Environment Environment `yaml:"environment,omitempty"`
 	Resources   Resources   `yaml:"resources,omitempty"`
 	Services    Services    `yaml:"services,omitempty"`
+	Tables      Tables      `yaml:"tables,omitempty"`
 	Timers      Timers      `yaml:"timers,omitempty"`
 
 	attributes map[string]bool

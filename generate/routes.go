@@ -65,6 +65,7 @@ var routes = map[string]string{
 	"SystemReleases":      "GET /system/releases",
 	"SystemUninstall":     "",
 	"SystemUpdate":        "PUT /system",
+	"TableGet":            "GET /apps/{app}/tables/{name}",
 	"Workers":             "",
 }
 

@@ -85,6 +85,8 @@ type Provider interface {
 	SystemUninstall(name string, opts SystemUninstallOptions) error
 	SystemUpdate(opts SystemUpdateOptions) error
 
+	TableGet(app, name string) (*Table, error)
+
 	Workers() error
 }
 
