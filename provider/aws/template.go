@@ -157,6 +157,19 @@ func formationHelpers() template.FuncMap {
 		"cronjobs": func(a *structs.App, m *manifest1.Manifest) CronJobs {
 			return appCronJobs(a, m)
 		},
+		"maintenance": func() template.HTML {
+			return template.HTML(`{
+				"Type": "fixed-response",
+				"FixedResponseActionConfig": {
+					"ContentType": "text/html",
+					"StatusCode": "503",
+					"MessageBody": { "Fn::If": [ "BlankMaintenanceUrl",
+						"<h1>Service Unavailable</h1>",
+						{ "Fn::Sub": "<style>iframe{margin:0;padding:0;height:100%;overflow:hidden}</style><iframe src='${MaintenanceUrl}'></iframe>" }
+					] }
+				}
+			}`)
+		},
 	}
 }
 func formationTemplate(name string, data interface{}) ([]byte, error) {

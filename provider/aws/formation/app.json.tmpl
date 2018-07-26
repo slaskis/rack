@@ -6,9 +6,11 @@
     "BlankIamPolicy": { "Fn::Equals": [ { "Ref": "IamPolicy" }, "" ] },
     "BlankLogBucket": { "Fn::Equals": [ { "Ref": "LogBucket" }, "" ] },
     "BlankLogRetention": { "Fn::Equals": [ { "Ref": "LogRetention" }, "" ] },
+    "BlankMaintenanceUrl": { "Fn::Equals": [ { "Ref": "MaintenanceUrl" }, "" ] },
     "FargateServices": { "Fn::Equals": [ { "Ref": "FargateServices" }, "Yes" ] },
     "FargateTimers": { "Fn::Equals": [ { "Ref": "FargateTimers" }, "Yes" ] },
     "InternalDomains": { "Fn::Equals": [ { "Ref": "InternalDomains" }, "Yes" ] },
+    "Maintenance": { "Fn::Equals": [ { "Ref": "Maintenance" }, "Yes" ] },
     "Private": { "Fn::Equals": [ { "Ref": "Private" }, "Yes" ] }
   },
   "Outputs": {
@@ -65,6 +67,15 @@
       "Default": "",
       "Description": "Number of days to keep logs (blank for unlimited)",
       "Type": "String"
+    },
+    "Maintenance": {
+      "Type": "String",
+      "Default": "No",
+      "AllowedValues": [ "Yes", "No" ]
+    },
+    "MaintenanceUrl": {
+      "Type": "String",
+      "Default": ""
     },
     "Private": {
       "Type": "String",
@@ -139,7 +150,10 @@
         "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
         {{ if .Domain }} "Condition": "InternalDomains", {{ end }}
         "Properties": {
-          "Actions": [ { "Type": "forward", "TargetGroupArn": { "Ref": "Balancer{{ upper .Name }}TargetGroup{{ if .Internal }}Internal{{ end }}" } } ],
+          "Actions": [ { "Fn::If": [ "Maintenance",
+            {{ maintenance }},
+            { "Type": "forward", "TargetGroupArn": { "Ref": "Balancer{{ upper .Name }}TargetGroup{{ if .Internal }}Internal{{ end }}" } }
+          ] } ],
           "Conditions": [ { "Field": "host-header", "Values": [ { "Fn::Join": [ ".", [ "{{$.App}}-{{.Name}}", { "Fn::ImportValue": { "Fn::Sub": "${Rack}:{{ router .Name $.Manifest }}Host" } } ] ] } ] } ],
           "ListenerArn": { "Fn::ImportValue": { "Fn::Sub": "${Rack}:{{ router .Name $.Manifest }}Listener80" } },
           "Priority": "{{ priority $.App .Name "default" }}"
@@ -222,7 +236,10 @@
               "DependsOn": "Balancer{{ upper $service.Name }}ListenerRule80Domain{{ dec $i }}",
             {{ end }}
             "Properties": {
-            "Actions": [ { "Type": "forward", "TargetGroupArn": { "Ref": "Balancer{{ upper $service.Name }}TargetGroup{{ if $service.Internal }}Internal{{ end }}" } } ],
+              "Actions": [ { "Fn::If": [ "Maintenance",
+                {{ maintenance . }},
+                { "Type": "forward", "TargetGroupArn": { "Ref": "Balancer{{ upper $service.Name }}TargetGroup{{ if $service.Internal }}Internal{{ end }}" } }
+              ] } ],
               "Conditions": [ { "Field": "host-header", "Values": [ "{{$domain}}" ] } ],
               "ListenerArn": { "Fn::ImportValue": { "Fn::Sub": "${Rack}:{{ router $service.Name $.Manifest }}Listener80" } },
               "Priority": "{{ priority $.App $service.Name $domain }}"
@@ -234,7 +251,7 @@
               "DependsOn": "Balancer{{ upper $service.Name }}ListenerRule443Domain{{ dec $i }}",
             {{ end }}
             "Properties": {
-            "Actions": [ { "Type": "forward", "TargetGroupArn": { "Ref": "Balancer{{ upper $service.Name }}TargetGroup{{ if $service.Internal }}Internal{{ end }}" } } ],
+              "Actions": [ { "Type": "forward", "TargetGroupArn": { "Ref": "Balancer{{ upper $service.Name }}TargetGroup{{ if $service.Internal }}Internal{{ end }}" } } ],
               "Conditions": [ { "Field": "host-header", "Values": [ "{{$domain}}" ] } ],
               "ListenerArn": { "Fn::ImportValue": { "Fn::Sub": "${Rack}:{{ router $service.Name $.Manifest }}Listener443" } },
               "Priority": "{{ priority $.App $service.Name $domain }}"
