@@ -33,6 +33,7 @@ services:
     - AWS_REGION=
     - AWS_SECRET_ACCESS_KEY=
     - DEVELOPMENT=true
+    - STACK_ID=dev
     - PROVIDER
     - RACK
     - VERSION=dev

@@ -63,6 +63,7 @@ type Provider struct {
 	SpotInstances       bool
 	Subnets             string
 	SubnetsPrivate      string
+	StackId             string
 	Version             string
 	Vpc                 string
 	VpcCidr             string
@@ -80,6 +81,7 @@ func FromEnv() (*Provider, error) {
 		Password:    os.Getenv("PASSWORD"),
 		Rack:        os.Getenv("RACK"),
 		Region:      os.Getenv("AWS_REGION"),
+		StackId:     os.Getenv("STACK_ID"),
 		ctx:         context.Background(),
 		log:         logger.New("ns=aws"),
 	}

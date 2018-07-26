@@ -407,11 +407,6 @@
       "Description": "Default build disk size in GB",
       "Default": "200"
     },
-    "ClientId": {
-      "Type": "String",
-      "Description": "Anonymous identifier",
-      "Default": ""
-    },
     "ContainerDisk": {
       "Type": "Number",
       "Description": "Default container disk size in GB",
@@ -2318,13 +2313,11 @@
             },
             "Environment": [
               { "Name": "AWS_REGION", "Value": { "Ref": "AWS::Region" } },
-              { "Name": "CLIENT_ID", "Value": { "Ref": "ClientId" } },
               { "Name": "HTTP_PROXY", "Value": { "Ref": "HttpProxy" } },
               { "Name": "HTTPS_PROXY", "Value": { "Ref": "HttpProxy" } },
               { "Name": "PASSWORD", "Value": { "Ref": "Password" } },
               { "Name": "PROVIDER", "Value": "aws" },
               { "Name": "RACK", "Value": { "Ref": "AWS::StackName" } },
-              { "Name": "SEGMENT_WRITE_KEY", "Value": "KLvwCXo6qcTmQHLpF69DEwGf9zh7lt9i" },
               { "Name": "STACK_ID", "Value": { "Ref": "AWS::StackId" } }
             ],
             "Image": { "Fn::If": [ "BlankBuildImage",
@@ -2394,13 +2387,11 @@
             },
             "Environment": [
               { "Name": "AWS_REGION", "Value": { "Ref": "AWS::Region" } },
-              { "Name": "CLIENT_ID", "Value": { "Ref": "ClientId" } },
               { "Name": "HTTP_PROXY", "Value": { "Ref": "HttpProxy" } },
               { "Name": "HTTPS_PROXY", "Value": { "Ref": "HttpProxy" } },
               { "Name": "PASSWORD", "Value": { "Ref": "Password" } },
               { "Name": "PROVIDER", "Value": "aws" },
               { "Name": "RACK", "Value": { "Ref": "AWS::StackName" } },
-              { "Name": "SEGMENT_WRITE_KEY", "Value": "KLvwCXo6qcTmQHLpF69DEwGf9zh7lt9i" },
               { "Name": "STACK_ID", "Value": { "Ref": "AWS::StackId" } }
             ],
             "Image": { "Fn::Sub": "convox/rack:${Version}" },
@@ -2469,13 +2460,11 @@
             },
             "Environment": [
               { "Name": "AWS_REGION", "Value": { "Ref": "AWS::Region" } },
-              { "Name": "CLIENT_ID", "Value": { "Ref": "ClientId" } },
               { "Name": "HTTP_PROXY", "Value": { "Ref": "HttpProxy" } },
               { "Name": "HTTPS_PROXY", "Value": { "Ref": "HttpProxy" } },
               { "Name": "PASSWORD", "Value": { "Ref": "Password" } },
               { "Name": "PROVIDER", "Value": "aws" },
               { "Name": "RACK", "Value": { "Ref": "AWS::StackName" } },
-              { "Name": "SEGMENT_WRITE_KEY", "Value": "KLvwCXo6qcTmQHLpF69DEwGf9zh7lt9i" },
               { "Name": "STACK_ID", "Value": { "Ref": "AWS::StackId" } }
             ],
             "Image": { "Fn::Sub": "convox/rack:${Version}" },
