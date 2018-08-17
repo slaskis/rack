@@ -140,7 +140,6 @@ func waitForInstanceDrain(cluster, ci string) error {
 	params := &ecs.ListTasksInput{
 		Cluster:           aws.String(cluster),
 		ContainerInstance: aws.String(ci),
-		DesiredStatus:     aws.String("RUNNING"),
 	}
 
 	tasks := []*string{}
