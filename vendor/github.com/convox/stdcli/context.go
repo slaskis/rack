@@ -97,7 +97,7 @@ func (c *Context) ReadSecret() (string, error) {
 }
 
 func (c *Context) TerminalRaw() error {
-	state, err := terminal.MakeRaw(int(c.Reader().Fd()))
+	state, err := terminal.MakeRaw(int(os.Stdout.Fd()))
 	if err != nil {
 		return err
 	}
