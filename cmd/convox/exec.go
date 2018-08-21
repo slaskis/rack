@@ -20,21 +20,23 @@ func Exec(c *stdcli.Context) error {
 	pid := c.Arg(0)
 	command := strings.Join(c.Args[1:], " ")
 
-	w, h, err := c.TerminalSize()
-	if err != nil {
-		return err
-	}
+	opts := structs.ProcessExecOptions{}
 
-	opts := structs.ProcessExecOptions{
-		Height: options.Int(h),
-		Width:  options.Int(w),
-	}
+	if c.Reader().IsTerminal() {
+		w, h, err := c.TerminalSize()
+		if err != nil {
+			return err
+		}
 
-	if err := c.TerminalRaw(); err != nil {
-		return err
-	}
+		opts.Height = options.Int(h)
+		opts.Width = options.Int(w)
 
-	defer c.TerminalRestore()
+		if err := c.TerminalRaw(); err != nil {
+			return err
+		}
+
+		defer c.TerminalRestore()
+	}
 
 	code, err := provider(c).ProcessExec(app(c), pid, command, c, opts)
 	if err != nil {
