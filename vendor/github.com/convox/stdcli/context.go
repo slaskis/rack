@@ -17,7 +17,6 @@ type Context struct {
 	Flags []*Flag
 
 	engine *Engine
-	state  *terminal.State
 }
 
 func (c *Context) Arg(i int) string {
@@ -96,33 +95,29 @@ func (c *Context) ReadSecret() (string, error) {
 	return string(data), nil
 }
 
-func (c *Context) TerminalRaw() error {
-	state, err := terminal.MakeRaw(int(c.Reader().Fd()))
-	if err != nil {
-		return err
+func (c *Context) TerminalRaw() func() {
+	restores := map[int]*terminal.State{}
+
+	// if s, err := terminal.MakeRaw(int(c.Reader().Fd())); err == nil {
+	//   restores[int(c.Reader().Fd())] = s
+	// }
+
+	if f, ok := c.Writer().Stdout.(*os.File); ok {
+		if s, err := terminal.MakeRaw(int(f.Fd())); err == nil {
+			restores[int(f.Fd())] = s
+		}
 	}
 
-	c.state = state
-
-	return nil
-}
-
-func (c *Context) TerminalRestore() error {
-	if c.state == nil {
-		return nil
+	return func() {
+		for fd, state := range restores {
+			terminal.Restore(fd, state)
+		}
+		c.Writef("\r")
 	}
-
-	if err := terminal.Restore(int(c.Reader().Fd()), c.state); err != nil {
-		return err
-	}
-
-	c.Writef("\r")
-
-	return nil
 }
 
 func (c *Context) TerminalSize() (int, int, error) {
-	return terminal.GetSize(int(c.Reader().Fd()))
+	return terminal.GetSize(int(os.Stdout.Fd()))
 }
 
 func (c *Context) Fail(err error) {
