@@ -29,32 +29,25 @@ func Run(c *stdcli.Context) error {
 
 	service := c.Arg(0)
 
-	var width, height int
-
-	if c.Reader().IsTerminal() {
-		if err := c.TerminalRaw(); err != nil {
-			return err
-		}
-
-		defer c.TerminalRestore()
-	}
-
-	if w, h, err := c.TerminalSize(); err == nil {
-		width = w
-		height = h
-	}
-
 	var opts structs.ProcessRunOptions
 
 	if err := c.Options(&opts); err != nil {
 		return err
 	}
 
+	opts.Command = options.String(strings.Join(c.Args[1:], " "))
+
+	if w, h, err := c.TerminalSize(); err == nil {
+		opts.Width = options.Int(w)
+		opts.Height = options.Int(h)
+	}
+
+	restore := c.TerminalRaw()
+	defer restore()
+
 	if s.Version <= "20180708231844" {
 		if c.Bool("detach") {
 			c.Startf("Running detached process")
-
-			opts.Command = options.String(strings.Join(c.Args[1:], " "))
 
 			pid, err := provider(c).ProcessRunDetached(app(c), service, opts)
 			if err != nil {
@@ -62,13 +55,6 @@ func Run(c *stdcli.Context) error {
 			}
 
 			return c.OK(pid)
-		}
-
-		opts.Command = options.String(strings.Join(c.Args[1:], " "))
-
-		if height > 0 && width > 0 {
-			opts.Height = options.Int(height)
-			opts.Width = options.Int(width)
 		}
 
 		code, err := provider(c).ProcessRunAttached(app(c), service, c, opts)
@@ -81,8 +67,6 @@ func Run(c *stdcli.Context) error {
 
 	if c.Bool("detach") {
 		c.Startf("Running detached process")
-
-		opts.Command = options.String(strings.Join(c.Args[1:], " "))
 
 		ps, err := provider(c).ProcessRun(app(c), service, opts)
 		if err != nil {
@@ -109,11 +93,8 @@ func Run(c *stdcli.Context) error {
 
 	eopts := structs.ProcessExecOptions{
 		Entrypoint: options.Bool(true),
-	}
-
-	if height > 0 && width > 0 {
-		eopts.Height = options.Int(height)
-		eopts.Width = options.Int(width)
+		Height:     opts.Height,
+		Width:      opts.Width,
 	}
 
 	code, err := provider(c).ProcessExec(app(c), ps.Id, command, c, eopts)
